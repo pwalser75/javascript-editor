@@ -9,6 +9,7 @@ const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
 });
 
 const loadScript = function() {
+	if (!localStorageAvailable()) return;
 	var code=localStorage.getItem('code');
 	if (code) {
 		editor.setValue(code);
@@ -16,6 +17,7 @@ const loadScript = function() {
 }
 
 const saveScript = function() {
+	if (!localStorageAvailable()) return;
 	var code = editor.getValue();
 	localStorage.setItem('code', code);
     console.log("Saved in local storage");
@@ -23,8 +25,17 @@ const saveScript = function() {
 }
 
 const removeScript = function() {
+	if (!localStorageAvailable()) return;
 	localStorage.removeItem('code');
 	window.location.reload();
+}
+
+const localStorageAvailable = function() {
+	try {
+		return localStorage;
+	} catch (e) {
+		return false;
+	}
 }
 
 // load on startup
@@ -47,9 +58,7 @@ const printConsole = function() {
 	errorOutput.innerHTML=errorOut.join("\n");	
 }
 
-const execute = function() {
-	
-	console.log("Executing code:");
+const runScript = function() {
 	
 	clearConsole();
 	var code = editor.getValue();

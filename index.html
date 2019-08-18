@@ -13,7 +13,6 @@
 	<link rel="stylesheet" href="style/custom.css">
 	
 	<!-- Themes -->
-	<link rel="stylesheet" href="style/darkula.css">
 	<link rel="stylesheet" href="style/base16-dark.css">
 	
 	<script src="script/codemirror.js"></script>
@@ -61,20 +60,11 @@ for (var name of names) {
 }
 </textarea>
 			<br>
-			<button id="execute" class="button-primary" onclick="execute();">Run</button>
+			<button id="execute" class="button-primary" onclick="runScript();">Run</button>
 			<button id="clear" onclick="clearConsole();">Clear console</button>
 			
 			<div id="error-card" class="inset-small card full-height card-red" style="display:none">
 				<h5><i class="fa fa-exclamation-triangle foreground-red"></i> ERROR</h5>
-				<div id="error-out"></div>
-			</div>
-			
-			<div id="error-card" class="card full-height card-red" style="display:none">
-				<div class="content background-red box">
-					<div class="box-content-stretch">
-						<i class="fa fa-exclamation-triangle"></i> ERROR
-					</div>
-				</div>
 				<div id="error-out"></div>
 			</div>
 			
