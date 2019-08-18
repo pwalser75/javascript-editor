@@ -1,2 +1,10 @@
-# javascript-editor
-Simple online javascript editor, for teaching purpose
+# Javascript Editor
+Simple online Javascript editor, for teaching purpose.
+
+Visit it here: [https://www.frostnova.ch/javascript](https://www.frostnova.ch/javascript/)
+
+![Screenshot](screenshot.png)
+
+**Features:**
+- Uses  **[Codemirror](https://codemirror.net/)** for syntax highlighting and autocompletion.
+- Script can be locally saved (local storage) and will be available again on reload.

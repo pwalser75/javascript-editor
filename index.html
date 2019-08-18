@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><title>Javascript Editor</title>
+    <base href="">
+    <meta charset="UTF-8">
+    <meta http-equiv="cleartype" content="on">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="style/idx-style-min.css">
+    <link rel="stylesheet" href="style/font-awesome.min.css">
+	<link rel="stylesheet" href="style/codemirror.css">
+	<link rel="stylesheet" href="style/show-hint.css">
+	<link rel="stylesheet" href="style/custom.css">
+	
+	<!-- Themes -->
+	<link rel="stylesheet" href="style/darkula.css">
+	<link rel="stylesheet" href="style/base16-dark.css">
+	
+	<script src="script/codemirror.js"></script>
+	<script src="script/show-hint.js"></script>
+	<script src="script/javascript-hint.js"></script>
+	<script src="script/javascript.js"></script>
+</head>
+<body>
+<div class="header shadow-below background-dark">
+    <div class="content-wrapper">
+        <div class="content-compact">
+            <nav class="navbar-dark navbar">
+                <div>
+					<img src="images/js.png" style="height: 1.5em;">
+					&nbsp;
+                    <span>
+                        <b>Javascript</b> Editor
+                    </span>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="content-wrapper">
+    <div class="content">
+        <div id="content">
+
+<h1>Javascript Editor&nbsp;<img src="images/js.png" style="height: 1em;"></h1>
+Enter Javascript code and press 'Run' to execute.
+<p>
+<label id="save" class="label-green border material-shadow-1" onclick="saveScript();">
+	<i class="fa fa-save"></i> Save
+</label>
+<label id="clear" class="label-red border material-shadow-1" onclick="removeScript();">
+	<i class="fa fa-remove"></i> Reset
+</label>
+<textarea id="code" name="code">
+const now = () => new Date().toLocaleTimeString();
+const format = text => now() + " | " + text;
+const log = message => console.log(format(message));
+
+var names = ["World", "Galaxy", "Universe"];
+for (var name of names) {
+	log("Hello "+name); 
+}
+</textarea>
+			<br>
+			<button id="execute" class="button-primary" onclick="execute();">Run</button>
+			<button id="clear" onclick="clearConsole();">Clear console</button>
+			
+			<div id="error-card" class="inset-small card full-height card-red" style="display:none">
+				<h5><i class="fa fa-exclamation-triangle foreground-red"></i> ERROR</h5>
+				<div id="error-out"></div>
+			</div>
+			
+			<div id="error-card" class="card full-height card-red" style="display:none">
+				<div class="content background-red box">
+					<div class="box-content-stretch">
+						<i class="fa fa-exclamation-triangle"></i> ERROR
+					</div>
+				</div>
+				<div id="error-out"></div>
+			</div>
+			
+			<pre>
+				<code id="console-out"></code>
+			</pre>
+		</div>
+    </div>
+</div>
+
+<script src="script/execute.js"></script>
+</body>
+</html>
