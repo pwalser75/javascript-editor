@@ -2,12 +2,10 @@
 
 .CodeMirror {
 	font-family: "Fira Code";
-	font-size: 18px;
 }
 #console-out {
 	padding: 6px;
 	color: rgba(255,255,255, 0.7);
 	background-color: #333333;
 	font-family: "Fira Code";
-	font-size: 16px;
 }
