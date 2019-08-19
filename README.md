@@ -7,4 +7,4 @@ Visit it here: [https://www.frostnova.ch/javascript](https://www.frostnova.ch/ja
 
 **Features:**
 - Uses  **[Codemirror](https://codemirror.net/)** for syntax highlighting and autocompletion.
-- Script can be locally saved (local storage) and will be available again on reload.
+- Scripts can be locally saved (local storage) and will be available again on reload.
