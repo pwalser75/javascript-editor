@@ -43,7 +43,7 @@
 <h1>Javascript Editor&nbsp;<img src="images/js.png" style="height: 1em;"></h1>
 Enter Javascript code and press 'Run' to execute.
 <p>
-<label id="save" class="label-green border material-shadow-1" onclick="saveScript();">
+<label id="save" title="Save (CTRL+s)" class="label-green border material-shadow-1" onclick="saveScript();">
 	<i class="fa fa-save"></i> Save
 </label>
 <label id="clear" class="label-red border material-shadow-1" onclick="removeScript();">
@@ -60,7 +60,7 @@ for (var name of names) {
 }
 </textarea>
 			<br>
-			<button id="execute" class="button-primary" onclick="runScript();">Run</button>
+			<button id="execute" title="Run (CTRL+Enter)" class="button-primary" onclick="runScript();">Run</button>
 			<button id="clear" onclick="clearConsole();">Clear console</button>
 			
 			<div id="error-card" class="inset-small card full-height card-red" style="display:none">

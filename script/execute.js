@@ -93,3 +93,11 @@ document.addEventListener("keydown", function(e) {
 	saveScript();
   }
 }, false);
+
+// Execute action
+document.addEventListener("keydown", function(e) {
+  if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) && e.keyCode == 13) {
+    e.preventDefault();
+	runScript();
+  }
+}, false);
