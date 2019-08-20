@@ -13,6 +13,12 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
 const displayScript = function(script) {
 	currentScript = script;
 	editor.setValue(script.script);
+	updateScriptName();
+}
+
+const updateScriptName = function(script) {
+	var scriptName = document.getElementById("script-name");
+	scriptName.innerHTML=currentScript.name? `&laquo;${currentScript.name}&raquo;` : 'unnamed script';
 }
 
 const updateScriptList = function() {
@@ -149,6 +155,7 @@ const saveScript = function() {
 	}
 	currentScript.lastSaved=new Date().getTime();
 	saveScripts();
+	updateScriptName();
 }
 
 const loadScript = function(id) {
@@ -163,12 +170,18 @@ const renameScript = function(id) {
 	if (!input) return;
 	script.name = input;
 	saveScripts();
+	updateScriptName();
 };
 
 const deleteScript = function(id) {
 	var script = getScript(id);
-	scripts.splice(scripts.indexOf(script),1);
-	saveScripts();
+	if (confirm(`Do you really want to delete the script '${script.name}'?`)) {
+		script.id=null;
+		script.name=null;
+		script.lastSaved=null;
+		scripts.splice(scripts.indexOf(script),1);
+		saveScripts();
+	}
 };
 
 const getScript = function(id) {

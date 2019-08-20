@@ -40,36 +40,40 @@
     <div class="content">
         <div id="content">
 
-		<h1>Javascript Editor&nbsp;<img src="images/js.png" style="height: 1em;"></h1>
-		Enter Javascript code and press 'Run' to execute.
-		<p>
-		<nav class="navbar navbar-dark navbar-border text-small">
-			<a href="#" title="New (CTRL+n)" class="nav-item" onclick="newScript();">
-				<i class="fa fa-file"></i>&nbsp;New
-			</a>
-			<a href="#" title="Save (CTRL+s)" class="nav-item" onclick="saveScript();">
-				<i class="fa fa-save"></i>&nbsp;Save
-			</a>
-			<span id="load" class="nav-item popup">
-				<i class="fa fa-folder-open"></i>&nbsp;Load
-				 <ul id="script-list" class="list" style="width: 400px;"></ul>
-			</span>
-		</nav>
+			<h1>Javascript Editor&nbsp;<img src="images/js.png" style="height: 1em;"></h1>
+			Enter Javascript code and press 'Run' to execute.
+			<p>
+			<nav class="navbar navbar-dark navbar-border text-small">
+				<a href="#" title="New (CTRL+n)" class="nav-item" onclick="newScript();">
+					<i class="fa fa-file"></i>&nbsp;New
+				</a>
+				<a href="#" title="Save (CTRL+s)" class="nav-item" onclick="saveScript();">
+					<i class="fa fa-save"></i>&nbsp;Save
+				</a>
+				<span id="load" class="nav-item popup">
+					<i class="fa fa-folder-open"></i>&nbsp;Load
+					 <ul id="script-list" class="list" style="width: 300px;"></ul>
+				</span>
+				<strong id="script-name"></strong>
+			</nav>
 
-		<textarea id="code" name="code"></textarea>
-		<br>
-		<button id="execute" title="Run (CTRL+Enter)" class="button-primary" onclick="runScript();">Run</button>
-		<button id="clear" onclick="clearConsole();">Clear console</button>
+			<textarea id="code" name="code"></textarea>
+			<br>
+			<button id="execute" title="Run (CTRL+Enter)" class="button-primary" onclick="runScript();">Run</button>
+			<button id="clear" onclick="clearConsole();">Clear console</button>
 
-		<div id="error-card" class="inset-small card full-height card-red" style="display:none">
-			<h5><i class="fa fa-exclamation-triangle foreground-red"></i> ERROR</h5>
-			<div id="error-out"></div>
-		</div>
+			<div id="error-card" class="inset-small card full-height card-red" style="display:none">
+				<h5><i class="fa fa-exclamation-triangle foreground-red"></i> ERROR</h5>
+				<div id="error-out"></div>
+			</div>
 
-		<pre>
-			<code id="console-out"></code>
-		</pre>
-
+			<pre style="margin:0">
+				<code id="console-out"></code>
+			</pre>
+			
+			<div id="placeholder">
+				Lorem ipsum
+			</div>
 
 		</div>
     </div>
