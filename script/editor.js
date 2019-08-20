@@ -80,7 +80,6 @@ const init = function() {
 	const charCode = c => c.charCodeAt(0);
 	const ctrlPressed = e => window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey;
 	
-	console.log(charCode('s'));
 	// Save action
 	document.addEventListener("keydown", function(e) {
 	  if (ctrlPressed(e) && e.keyCode == charCode('S')) {
