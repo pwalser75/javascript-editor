@@ -1,13 +1,13 @@
-
-	
 var scripts = [];
 var currentScript;
 
 var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+	mode: {name: "javascript", globalVars: true},
 	lineNumbers: true,
+    lineWrapping: true,
 	theme: 'base16-dark',
-	extraKeys: {"Ctrl-Space": "autocomplete"},
-	mode: {name: "javascript", globalVars: true}
+	viewportMargin: Infinity,
+	extraKeys: {"Ctrl-Space": "autocomplete"}
 });
 
 const displayScript = function(script) {
@@ -63,7 +63,6 @@ const createScriptElement = function(script) {
 	return item;    
 }
 
-
 const runScript = function() {
 	
 	clearConsole();
@@ -78,9 +77,13 @@ const runScript = function() {
 
 const init = function() {
 	
+	const charCode = c => c.charCodeAt(0);
+	const ctrlPressed = e => window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey;
+	
+	console.log(charCode('s'));
 	// Save action
 	document.addEventListener("keydown", function(e) {
-	  if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) && e.keyCode == 83) {
+	  if (ctrlPressed(e) && e.keyCode == charCode('S')) {
 		e.preventDefault();
 		saveScript();
 	  }
@@ -88,13 +91,25 @@ const init = function() {
 
 	// Execute action
 	document.addEventListener("keydown", function(e) {
-	  if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) && e.keyCode == 13) {
+	  if (ctrlPressed(e) && e.keyCode == 13) {
 		e.preventDefault();
 		runScript();
 	  }
 	}, false);
+	
+	// Copy script as JSON
+	document.addEventListener("keydown", function(e) {
+	  if (ctrlPressed(e) && e.keyCode == charCode('Q')) {
+		e.preventDefault();
+		var clipboardText=document.getElementById("clipboard-text");
+		clipboardText.innerHTML=JSON.stringify(editor.getValue());
+		clipboardText.select();
+		document.execCommand("copy");
+	  }
+	}, false);
 
 	loadScripts();
+	loadTutorials();
 	var latestScript = getLatestScript();
 	displayScript(latestScript? latestScript : getDemoScript());
 }
@@ -144,8 +159,8 @@ const saveScript = function() {
 	
 	currentScript.script = editor.getValue();
 	
-	if (!currentScript.name) {
-		var input = prompt("Please enter a name for the script");
+	if (!currentScript.name || !currentScript.id) {
+		var input = prompt("Please enter a name for the script", currentScript.name);
 		if (!input) return;
 		currentScript.name = input;
 	}
@@ -177,7 +192,6 @@ const deleteScript = function(id) {
 	var script = getScript(id);
 	if (confirm(`Do you really want to delete the script '${script.name}'?`)) {
 		script.id=null;
-		script.name=null;
 		script.lastSaved=null;
 		scripts.splice(scripts.indexOf(script),1);
 		saveScripts();
@@ -185,12 +199,7 @@ const deleteScript = function(id) {
 };
 
 const getScript = function(id) {
-	for (var script of scripts) {
-		if (id===script.id) {
-			return script;
-		}
-	}
-	return undefined;
+	return scripts.find(script => script.id === id);
 };
 
 const getNextScriptId = function() {
@@ -203,6 +212,39 @@ const getNextScriptId = function() {
 	return id;
 }
 
+const loadTutorials = function() {
+	var tutorialList = document.getElementById("tutorial-list");
+	tutorialList.innerHTML = "";
+	for (var tutorial of tutorials) {
+		var item = createTutorialElement(tutorial);
+		tutorialList.appendChild(item);
+	}
+}
+const loadTutorial = function(id) {
+	var tutorial = tutorials.find(t => t.id === id);
+	if (tutorial) {
+		var script = {
+			name: tutorial.name,
+			script: tutorial.script
+		};
+		displayScript(script);
+	}
+}
+
+const createTutorialElement = function(tutorial) {
+	
+	var item = document.createElement("li");
+	item.setAttribute("onClick", "loadTutorial("+tutorial.id+")");
+	item.setAttribute("style", "cursor:pointer");
+		
+	var name = document.createElement("strong");
+	name.append(document.createTextNode(tutorial.name));
+	item.append(name);
+	item.append(document.createElement("br"));
+	item.append(document.createTextNode(tutorial.description));
+	return item;    
+}
+
 const localStorageAvailable = function() {
 	try {
 		return localStorage;
@@ -210,3 +252,18 @@ const localStorageAvailable = function() {
 		return false;
 	}
 }
+
+const tutorials = [
+	{
+	  "id": 1,
+	  "name": "#1 Hello World",
+	  "description": "Input and output",
+	  "script":"// prompt for user name and save the value in a variable called 'name'\nvar name = prompt(\"Hello, what's your name?\");\n\n// output the name to the console log\nconsole.log(\"Hello \" + name);\n"
+	}, 
+	{
+	  "id": 2,
+	  "name": "#2 Variables",
+	  "description": "Variables and basic value types",
+	  "script":"var text = \"Hello World\"; // a string (text) value. You can use single (') or double (\") quotes.\nvar number = 123.45; // a number value\n\n// calculate with numbers an variables\nvar a = 1 + 2;\nvar b = 15 / a;\nvar c = a + b;\nconsole.log(c);\n\n// concatenate strings and numbers\nvar firstname = \"Indiana\";\nvar lastname = \"Jones\";\nvar fullname = firstname + ' ' + lastname;\nvar age = 42;\nconsole.log(fullname+\", \"+age+\" years old\");"
+	}
+];

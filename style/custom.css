@@ -2,6 +2,8 @@
 
 .CodeMirror {
 	font-family: "Fira Code";
+	height: auto;
+	max-height: 50%;
 }
 #console-out {
 	padding: 6px;
