@@ -264,5 +264,11 @@ const tutorials = [
 	  "name": "#2 Variables",
 	  "description": "Variables and basic value types",
 	  "script":"var text = \"Hello World\"; // a string (text) value. You can use single (') or double (\") quotes.\nvar number = 123.45; // a number value\n\n// calculate with numbers an variables\nvar a = 1 + 2;\nvar b = 15 / a;\nvar c = a + b;\nconsole.log(c);\n\n// concatenate strings and numbers\nvar firstname = \"Indiana\";\nvar lastname = \"Jones\";\nvar fullname = firstname + ' ' + lastname;\nvar age = 42;\nconsole.log(fullname+\", \"+age+\" years old\");"
+	},
+	{
+	  "id": 3,
+	  "name": "#2 HTML/DOM",
+	  "description": "Manipulating HTML in the browser",
+	  "script":"const movies = [\n  { \n    title: \"Blade Runner\", \n    year: 1982, \n    genres: ['Sci-Fi', 'Thriller'] \n  },\n  { \n    title: \"The Cabin in the Woods\", \n    year: 2012, \n    genres: ['Fantasy', 'Horror', 'Mistery'] \n  },\n  { \n    title: \"Back to the Future\", \n    year: 1985, \n    genres: ['Adventure', 'Comedy', 'Sci-Fi'] \n  }\n];\n\nconst createMovieList = function() {\n  var list = document.createElement(\"ul\");\n  for (var movie of movies) {\n    var item = document.createElement(\"li\");\n\tvar title = document.createElement(\"b\");\n    title.append(document.createTextNode(movie.title));\n    item.append(title);\n    item.append(document.createElement(\"br\"));\n    item.append(document.createTextNode(movie.year));\n    item.append(document.createTextNode(\"  | \"));\n    var genres = document.createElement(\"i\");\n    genres.append(document.createTextNode(movie.genres.join(', ')));\n    item.append(genres);\n    list.append(item);\n  }\n  return list;\n}\n\nvar placeholder = document.getElementById(\"placeholder\");\nplaceholder.innerHTML=\"\"; // clear content\nvar list = createMovieList();\nplaceholder.append(list);\n"
 	}
 ];
