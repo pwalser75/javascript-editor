@@ -31,36 +31,27 @@ const updateScriptList = function() {
 }
 
 const createScriptElement = function(script) {
-	
-	var item = document.createElement("li");
-	item.setAttribute("onClick", "loadScript("+script.id+")");
-	item.setAttribute("style", "cursor:pointer");
-	
-	var actions = document.createElement("div");
-	actions.setAttribute("class", "pull-right");
-	item.append(actions);
-	
-	var renameAction = document.createElement("i");
-	renameAction.setAttribute("title", "rename");
-	renameAction.setAttribute("class", "fa fa-edit label-orange");
-	renameAction.setAttribute("onClick", "renameScript("+script.id+")");
-	actions.append(renameAction);
-	
-	actions.append(document.createTextNode("\u00A0"));
-	
-	var deleteAction = document.createElement("i");
-	deleteAction.setAttribute("title", "delete");
-	deleteAction.setAttribute("class", "fa fa-remove label-red");	
-	deleteAction.setAttribute("onClick", "deleteScript("+script.id+")");
-	actions.append(deleteAction);
-	
-	var name = document.createElement("strong");
-	name.append(document.createTextNode(script.name));
-	item.append(name);
-	item.append(document.createElement("br"));
 	var datetime = new Date(script.lastSaved);
-	item.append(document.createTextNode("last saved: "+datetime.toLocaleDateString()+" "+datetime.toLocaleTimeString()));
-	return item;    
+	
+	var item = new DOMBuilder("li")
+		.attribute("onClick", "loadScript("+script.id+")")
+		.attribute("style", "cursor:pointer");
+	
+	var actions = item.element("div").attribute("class", "pull-right");
+	actions.element("i")
+		.attribute("title", "rename")
+		.attribute("class", "fa fa-edit label-orange")
+		.attribute("onClick", "renameScript("+script.id+")");
+	actions.text("\u00A0");
+	actions.element("i")
+		.attribute("title", "delete")
+		.attribute("class", "fa fa-remove label-red")
+		.attribute("onClick", "deleteScript("+script.id+")");
+	
+	item.element("strong").text(script.name);
+	item.element("br");
+	item.element("small").text("last saved: "+datetime.toLocaleDateString()+" "+datetime.toLocaleTimeString());
+	return item.node;
 }
 
 const runScript = function() {
@@ -232,16 +223,14 @@ const loadTutorial = function(id) {
 
 const createTutorialElement = function(tutorial) {
 	
-	var item = document.createElement("li");
-	item.setAttribute("onClick", "loadTutorial("+tutorial.id+")");
-	item.setAttribute("style", "cursor:pointer");
-		
-	var name = document.createElement("strong");
-	name.append(document.createTextNode(tutorial.name));
-	item.append(name);
-	item.append(document.createElement("br"));
-	item.append(document.createTextNode(tutorial.description));
-	return item;    
+	var item = new DOMBuilder("li")
+		.attribute("onClick", "loadTutorial("+tutorial.id+")")
+		.attribute("style", "cursor:pointer");
+	
+	item.element('strong').text(tutorial.name);
+	item.element('br');
+	item.element('small').text(tutorial.description);
+	return item.node;    
 }
 
 const localStorageAvailable = function() {
@@ -250,6 +239,32 @@ const localStorageAvailable = function() {
 	} catch (e) {
 		return false;
 	}
+}
+
+const clearPlaceholder = function() {
+	var placeholder = document.getElementById("placeholder");
+	placeholder.innerHTML="";
+}
+
+// class to simplify DOM manipulation
+function DOMBuilder(elementName) {
+  this.node = document.createElement(elementName);
+  
+  this.element = function(elementName) {
+    var child = new DOMBuilder(elementName);
+    this.node.append(child.node);
+    return child;
+  }
+  
+  this.text = function(text) {
+    this.node.append(document.createTextNode(text));
+    return this;
+  }
+  
+  this.attribute = function(key, value) {
+    this.node.setAttribute(key,value);
+    return this;
+  }
 }
 
 const tutorials = [
@@ -267,8 +282,8 @@ const tutorials = [
 	},
 	{
 	  "id": 3,
-	  "name": "#2 HTML/DOM",
+	  "name": "#3 HTML/DOM",
 	  "description": "Manipulating HTML in the browser",
-	  "script":"const movies = [\n  { \n    title: \"Blade Runner\", \n    year: 1982, \n    genres: ['Sci-Fi', 'Thriller'] \n  },\n  { \n    title: \"The Cabin in the Woods\", \n    year: 2012, \n    genres: ['Fantasy', 'Horror', 'Mistery'] \n  },\n  { \n    title: \"Back to the Future\", \n    year: 1985, \n    genres: ['Adventure', 'Comedy', 'Sci-Fi'] \n  }\n];\n\nconst createMovieList = function() {\n  var list = document.createElement(\"ul\");\n  for (var movie of movies) {\n    var item = document.createElement(\"li\");\n\tvar title = document.createElement(\"b\");\n    title.append(document.createTextNode(movie.title));\n    item.append(title);\n    item.append(document.createElement(\"br\"));\n    item.append(document.createTextNode(movie.year));\n    item.append(document.createTextNode(\"  | \"));\n    var genres = document.createElement(\"i\");\n    genres.append(document.createTextNode(movie.genres.join(', ')));\n    item.append(genres);\n    list.append(item);\n  }\n  return list;\n}\n\nvar placeholder = document.getElementById(\"placeholder\");\nplaceholder.innerHTML=\"\"; // clear content\nvar list = createMovieList();\nplaceholder.append(list);\n"
+	  "script":"// Example data: some movies\nconst movies = [\n  { \n    title: \"Blade Runner\", \n    year: 1982, \n    genres: ['Sci-Fi', 'Thriller']\n  },\n  { \n    title: \"The Cabin in the Woods\", \n    year: 2012, \n    genres: ['Fantasy', 'Horror', 'Mistery'] \n  },\n  { \n    title: \"Back to the Future\", \n    year: 1985, \n    genres: ['Adventure', 'Comedy', 'Sci-Fi'] \n  }\n];\n\n// class to simplify DOM manipulation\nfunction HTMLBuilder(elementName) {\n  this.node = document.createElement(elementName);\n  \n  this.element = function(elementName) {\n    var child = new HTMLBuilder(elementName);\n    this.node.append(child.node);\n    return child;\n  }\n  \n  this.text = function(text) {\n    this.node.append(document.createTextNode(text));\n    return this;\n  }\n  \n  this.attribute = function(key, value) {\n    this.node.setAttribute(key,value);\n    return this;\n  }\n}\n\n// render the movies as HTML\nconst createMovieList = function() {\n  var placeholder = document.getElementById(\"placeholder\");\n  placeholder.innerHTML=\"\"; // clear content\n  \n  var list = new HTMLBuilder('ul');\n  for (var movie of movies) {\n    var item = list.element('li');\n    item.element('b').text(movie.title);\n    item.element('br');\n    item.text(movie.year).text(' | ')\n    item.element('i').text(movie.genres.join(', '));\n  }\n  placeholder.append(list.node);\n}\n\ncreateMovieList();\n"
 	}
 ];

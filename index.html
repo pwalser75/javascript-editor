@@ -43,7 +43,7 @@
 			<h1>Javascript Editor&nbsp;<img src="images/js.png" style="height: 1em;"></h1>
 			Enter Javascript code and press 'Run' to execute.
 			<p>
-			<nav class="navbar navbar-dark navbar-border text-small">
+			<nav class="navbar navbar-dark navbar-border">
 				<a href="#" title="New (CTRL+n)" class="nav-item" onclick="newScript();">
 					<i class="fa fa-file"></i>&nbsp;New
 				</a>
@@ -65,7 +65,7 @@
 			<textarea id="code" name="code"></textarea>
 			<br>
 			<button id="execute" title="Run (CTRL+Enter)" class="button-primary" onclick="runScript();">Run</button>
-			<button id="clear" onclick="clearConsole();">Clear console</button>
+			<button id="clear" onclick="clearConsole(); clearPlaceholder();">Clear output</button>
 
 			<div id="error-card" class="inset-small card full-height card-red" style="display:none">
 				<h5><i class="fa fa-exclamation-triangle foreground-red"></i> ERROR</h5>
