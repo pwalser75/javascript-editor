@@ -17,13 +17,13 @@ console.error = function(msg) {
 	deferredOutput();
 }
 
-const clearConsole = function() {
+function clearConsole() {
 	logOut=[];
 	errorOut=[];
 	printConsole();
 };
 
-const printConsole = function() {
+function printConsole() {
 	var consoleOutput=document.getElementById("console-out");
 	consoleOutput.innerHTML=logOut.join("\n");
 	
@@ -34,11 +34,11 @@ const printConsole = function() {
 	errorOutput.innerHTML=errorOut.join("\n");	
 }
 
-const deferredOutput = function() {
+function deferredOutput() {
 	clearTimeout();
 	setTimeout(printConsole, 50);
 }
 
-const currentTimeMs = function() {
+function currentTimeMs() {
 	return new Date().getTime();
 }

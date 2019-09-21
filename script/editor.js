@@ -10,18 +10,19 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
 	extraKeys: {"Ctrl-Space": "autocomplete"}
 });
 
-const displayScript = function(script) {
+function displayScript(script) {
+	clear();
 	currentScript = script;
 	editor.setValue(script.script);
 	updateScriptName();
 }
 
-const updateScriptName = function(script) {
+function updateScriptName(script) {
 	var scriptName = document.getElementById("script-name");
 	scriptName.innerHTML=currentScript.name? `&laquo;${currentScript.name}&raquo;` : 'unnamed script';
 }
 
-const updateScriptList = function() {
+function updateScriptList() {
 	var scriptList = document.getElementById("script-list");
 	scriptList.innerHTML = "";
 	for (var script of scripts) {
@@ -30,10 +31,10 @@ const updateScriptList = function() {
 	}
 }
 
-const createScriptElement = function(script) {
+function createScriptElement(script) {
 	var datetime = new Date(script.lastSaved);
 	
-	var item = new DOMBuilder("li")
+	var item = new HTMLBuilder("li")
 		.attribute("onClick", "loadScript("+script.id+")")
 		.attribute("style", "cursor:pointer");
 	
@@ -54,9 +55,9 @@ const createScriptElement = function(script) {
 	return item.node;
 }
 
-const runScript = function() {
+function runScript() {
 	
-	clearConsole();
+	clear();
 	var code = editor.getValue();
 	
 	try {
@@ -66,7 +67,12 @@ const runScript = function() {
 	}
 };
 
-const init = function() {
+function clear() {
+	clearConsole();
+	clearPlaceholder();
+}
+
+function init() {
 	
 	const charCode = c => c.charCodeAt(0);
 	const ctrlPressed = e => window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey;
@@ -104,7 +110,7 @@ const init = function() {
 	displayScript(latestScript? latestScript : getDemoScript());
 }
 
-const getDemoScript = function() {
+function getDemoScript() {
 	return { script: `const now = () => new Date().toLocaleTimeString();
 const format = text => now() + " | " + text;
 const log = message => console.log(format(message));
@@ -116,16 +122,16 @@ for (var name of names) {
 }`};
 }
 
-const newScript = function() {
+function newScript() {
 	displayScript( { script: "" } );
 }
 
-const getLatestScript = function() {
+function getLatestScript() {
 	scripts.sort((a, b) => (a.lastSaved < b.lastSaved) ? 1 : -1);
 	return scripts && scripts.length > 0 ? scripts[0]  : null;
 }
 
-const loadScripts = function() {
+function loadScripts() {
 	if (!localStorageAvailable()) return;
 	var stored=localStorage.getItem('scripts');
 	scripts=stored? JSON.parse(stored) : [];
@@ -134,7 +140,7 @@ const loadScripts = function() {
 
 //	localStorage.removeItem('scripts');
 	
-const saveScripts = function() {
+function saveScripts() {
 	if (!localStorageAvailable()) return;
 	
 	// sort by last saved, descending
@@ -144,7 +150,7 @@ const saveScripts = function() {
 	updateScriptList();
 }
 
-const saveScript = function() {
+function saveScript() {
 	if (!localStorageAvailable()) return;
 	
 	currentScript.script = editor.getValue();
@@ -163,13 +169,13 @@ const saveScript = function() {
 	updateScriptName();
 }
 
-const loadScript = function(id) {
+function loadScript(id) {
 	var script = getScript(id);
 	if (!script) return;
 	displayScript(script);
 };
 
-const renameScript = function(id) {
+function renameScript(id) {
 	var script = getScript(id);
 	var input = prompt("Please enter a new name for the script", script.name);
 	if (!input) return;
@@ -178,7 +184,7 @@ const renameScript = function(id) {
 	updateScriptName();
 };
 
-const deleteScript = function(id) {
+function deleteScript(id) {
 	var script = getScript(id);
 	if (confirm(`Do you really want to delete the script '${script.name}'?`)) {
 		script.id=null;
@@ -188,11 +194,11 @@ const deleteScript = function(id) {
 	}
 };
 
-const getScript = function(id) {
+function getScript(id) {
 	return scripts.find(script => script.id === id);
 };
 
-const getNextScriptId = function() {
+function getNextScriptId() {
 	var id = 1;
 	for (var script of scripts) {
 		if (script.id >= id) {
@@ -202,7 +208,7 @@ const getNextScriptId = function() {
 	return id;
 }
 
-const loadTutorials = function() {
+function loadTutorials() {
 	var tutorialList = document.getElementById("tutorial-list");
 	tutorialList.innerHTML = "";
 	for (var tutorial of tutorials) {
@@ -210,7 +216,7 @@ const loadTutorials = function() {
 		tutorialList.appendChild(item);
 	}
 }
-const loadTutorial = function(id) {
+function loadTutorial(id) {
 	var tutorial = tutorials.find(t => t.id === id);
 	if (tutorial) {
 		var script = {
@@ -221,9 +227,9 @@ const loadTutorial = function(id) {
 	}
 }
 
-const createTutorialElement = function(tutorial) {
+function createTutorialElement(tutorial) {
 	
-	var item = new DOMBuilder("li")
+	var item = new HTMLBuilder("li")
 		.attribute("onClick", "loadTutorial("+tutorial.id+")")
 		.attribute("style", "cursor:pointer");
 	
@@ -233,7 +239,7 @@ const createTutorialElement = function(tutorial) {
 	return item.node;    
 }
 
-const localStorageAvailable = function() {
+function localStorageAvailable() {
 	try {
 		return localStorage;
 	} catch (e) {
@@ -241,19 +247,19 @@ const localStorageAvailable = function() {
 	}
 }
 
-const clearPlaceholder = function() {
+function clearPlaceholder() {
 	var placeholder = document.getElementById("placeholder");
 	placeholder.innerHTML="";
 }
 
 // class to simplify DOM manipulation
-function DOMBuilder(elementName) {
-  this.node = document.createElement(elementName);
+function HTMLBuilder(node) {
+  this.node = typeof node == "string" ? document.createElement(node) : node;
   
   this.element = function(elementName) {
-    var child = new DOMBuilder(elementName);
-    this.node.append(child.node);
-    return child;
+    var element = document.createElement(elementName);
+    this.node.append(element);
+    return new HTMLBuilder(element);
   }
   
   this.text = function(text) {
@@ -265,7 +271,13 @@ function DOMBuilder(elementName) {
     this.node.setAttribute(key,value);
     return this;
   }
+  
+  this.clear = function() {
+    this.node.innerHTML="";
+    return this;
+  }
 }
+
 
 const tutorials = [
 	{
@@ -282,8 +294,14 @@ const tutorials = [
 	},
 	{
 	  "id": 3,
-	  "name": "#3 HTML/DOM",
+	  "name": "#3 Guess number",
+	  "description": "Guess a number between 1 and 100",
+	  "script": "var number = Math.ceil(Math.random() * 100);\nvar found = false;\nvar message = \"Guess a number between 1 and 100\";\n\nwhile (!found) {\n    var input = prompt(message);\n    var guess = Number.parseFloat(input);\n\n    if (guess < number) {\n        message = \"Larger than \"+guess;\n    } else if (guess > number) {\n        message = \"Smaller than \"+guess;\n    } else if (guess) { // check if there was any input at all\n        found = true;\n    }\n}\nalert(\"Exactly, the number is \"+number);\n"
+	},
+	{
+	  "id": 4,
+	  "name": "#4 HTML/DOM",
 	  "description": "Manipulating HTML in the browser",
-	  "script":"// Example data: some movies\nconst movies = [\n  { \n    title: \"Blade Runner\", \n    year: 1982, \n    genres: ['Sci-Fi', 'Thriller']\n  },\n  { \n    title: \"The Cabin in the Woods\", \n    year: 2012, \n    genres: ['Fantasy', 'Horror', 'Mistery'] \n  },\n  { \n    title: \"Back to the Future\", \n    year: 1985, \n    genres: ['Adventure', 'Comedy', 'Sci-Fi'] \n  }\n];\n\n// class to simplify DOM manipulation\nfunction HTMLBuilder(elementName) {\n  this.node = document.createElement(elementName);\n  \n  this.element = function(elementName) {\n    var child = new HTMLBuilder(elementName);\n    this.node.append(child.node);\n    return child;\n  }\n  \n  this.text = function(text) {\n    this.node.append(document.createTextNode(text));\n    return this;\n  }\n  \n  this.attribute = function(key, value) {\n    this.node.setAttribute(key,value);\n    return this;\n  }\n}\n\n// render the movies as HTML\nconst createMovieList = function() {\n  var placeholder = document.getElementById(\"placeholder\");\n  placeholder.innerHTML=\"\"; // clear content\n  \n  var list = new HTMLBuilder('ul');\n  for (var movie of movies) {\n    var item = list.element('li');\n    item.element('b').text(movie.title);\n    item.element('br');\n    item.text(movie.year).text(' | ')\n    item.element('i').text(movie.genres.join(', '));\n  }\n  placeholder.append(list.node);\n}\n\ncreateMovieList();\n"
+	  "script":"// Example data: some movies\nconst movies = [\n  { \n    title: \"Blade Runner\", \n    year: 1982, \n    genres: ['Sci-Fi', 'Thriller']\n  },\n  { \n    title: \"The Cabin in the Woods\", \n    year: 2012, \n    genres: ['Fantasy', 'Horror', 'Mistery'] \n  },\n  { \n    title: \"Back to the Future\", \n    year: 1985, \n    genres: ['Adventure', 'Comedy', 'Sci-Fi'] \n  }\n];\n\nfunction HTMLBuilder(node) {\n  this.node = typeof node == \"string\" ? document.createElement(node) : node;\n  \n  this.element = function(elementName) {\n    var element = document.createElement(elementName);\n    this.node.append(element);\n    return new HTMLBuilder(element);\n  }\n  \n  this.text = function(text) {\n    this.node.append(document.createTextNode(text));\n    return this;\n  }\n  \n  this.attribute = function(key, value) {\n    this.node.setAttribute(key,value);\n    return this;\n  }\n  \n  this.clear = function() {\n    this.node.innerHTML=\"\";\n    return this;\n  }\n}\n\n// render the movies as HTML\nfunction createMovieList() {\n  var placeholder = document.getElementById(\"placeholder\");\n  var builder = new HTMLBuilder(placeholder);\n  \n  var list = builder.element('ul');\n  for (var movie of movies) {\n    var item = list.element('li');\n    item.element('b').text(movie.title);\n    item.element('br');\n    item.text(movie.year).text(' | ')\n    item.element('i').text(movie.genres.join(', '));\n  }\n  placeholder.append(list.node);\n}\n\ncreateMovieList();\n"
 	}
 ];
