@@ -101,6 +101,7 @@ function init() {
 		clipboardText.innerHTML=JSON.stringify(editor.getValue());
 		clipboardText.select();
 		document.execCommand("copy");
+		clipboardText.innerHTML='';
 	  }
 	}, false);
 

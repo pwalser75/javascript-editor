@@ -46,3 +46,16 @@ function deferredOutput() {
 function currentTimeMs() {
 	return new Date().getTime();
 }
+
+function copyConsoleClipboard() {
+	var content=logOut.join("\n");
+	copyClipboard(content);
+}
+
+function copyClipboard(text) {
+	var clipboardText=document.getElementById("clipboard-text");
+	clipboardText.innerHTML=text;
+	clipboardText.select();
+	document.execCommand("copy");
+	clipboardText.innerHTML='';
+}
