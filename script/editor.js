@@ -194,6 +194,33 @@ function deleteScript(id) {
 	}
 };
 
+function downloadScript() {
+	
+	currentScript.script = editor.getValue();
+	
+	if (!currentScript.name || !currentScript.id) {
+		var input = prompt("Please enter a name for the script", currentScript.name);
+		if (!input) return;
+		currentScript.name = input;
+	}
+	if (!currentScript.id) {
+		currentScript.id = getNextScriptId();
+		scripts.push(currentScript);
+	}
+	updateScriptName();
+	download(currentScript.name+'.js', "application/javascript", currentScript.script);
+}
+
+function download(filename, mimeType, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:'+mimeType+',' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+  element.style.display = 'none';
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+}
+
 function getScript(id) {
 	return scripts.find(script => script.id === id);
 };
