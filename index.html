@@ -19,6 +19,8 @@
 	<script src="script/show-hint.js"></script>
 	<script src="script/javascript-hint.js"></script>
 	<script src="script/javascript.js"></script>
+	<script src="script/jszip.min.js"></script>
+	<script src="script/filesaver.js"></script>
 </head>
 <body onload="init();">
 <div class="header shadow-below background-dark">
@@ -55,7 +57,10 @@
 					<ul id="script-list" class="list" style="width: 300px;"></ul>
 				</span>
 				<a href="#" title="Download" class="nav-item" onclick="downloadScript();">
-					<i class="fa fa-download"></i>&nbsp;Download
+					<i class="fa fa-download"></i>&nbsp;
+				</a>
+				<a href="#" title="Download All (ZIP)" class="nav-item" onclick="downloadZIP();">
+					<i class="fa fa-file-archive-o"></i>&nbsp;
 				</a>
 				<strong id="script-name"></strong>
 				<span class="pull"></span>

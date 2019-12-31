@@ -76,6 +76,7 @@ function init() {
 	
 	const charCode = c => c.charCodeAt(0);
 	const ctrlPressed = e => window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey;
+	const shiftPressed = e => e.shiftKey;
 	
 	// Save action
 	document.addEventListener("keydown", function(e) {
@@ -95,7 +96,7 @@ function init() {
 	
 	// Copy script as JSON
 	document.addEventListener("keydown", function(e) {
-	  if (ctrlPressed(e) && e.keyCode == charCode('Q')) {
+	  if (ctrlPressed(e) && shiftPressed(e) && e.keyCode == charCode('Q')) {
 		e.preventDefault();
 		var clipboardText=document.getElementById("clipboard-text");
 		clipboardText.innerHTML=JSON.stringify(editor.getValue());
@@ -152,13 +153,15 @@ function saveScripts() {
 }
 
 function saveScript() {
-	if (!localStorageAvailable()) return;
-	
+	if (!localStorageAvailable()) return false;
+
 	currentScript.script = editor.getValue();
 	
 	if (!currentScript.name || !currentScript.id) {
 		var input = prompt("Please enter a name for the script", currentScript.name);
-		if (!input) return;
+		if (!input) {
+			return false;
+		}
 		currentScript.name = input;
 	}
 	if (!currentScript.id) {
@@ -168,6 +171,7 @@ function saveScript() {
 	currentScript.lastSaved=new Date().getTime();
 	saveScripts();
 	updateScriptName();
+	return true;
 }
 
 function loadScript(id) {
@@ -196,30 +200,46 @@ function deleteScript(id) {
 };
 
 function downloadScript() {
-	
-	currentScript.script = editor.getValue();
-	
-	if (!currentScript.name || !currentScript.id) {
-		var input = prompt("Please enter a name for the script", currentScript.name);
-		if (!input) return;
-		currentScript.name = input;
+	if (!saveScript()) {
+		return;
 	}
-	if (!currentScript.id) {
-		currentScript.id = getNextScriptId();
-		scripts.push(currentScript);
-	}
-	updateScriptName();
 	download(currentScript.name+'.js', "application/javascript", currentScript.script);
 }
 
+function downloadZIP() {
+	if (scripts.length == 0) {
+		return;
+	}
+	if (!saveScript()) {
+		return;
+	}
+	var zip = new JSZip();
+	var dir = zip.folder('scripts');
+
+	for (var script of scripts) {
+		dir.file(fileName(script.name+'.js'), script.script);
+	}
+	// see FileSaver.js
+	zip.generateAsync({type:"blob"})
+		.then(content => saveAs(content, 'scripts.zip'));
+}
+
+function fileName(name) {
+	if (!name) {
+		return name;
+	}
+	return name
+	.replace('/', '-')
+	.replace('\\', '-')
+	.replace('\t', ' ')
+	.replace('\n', ' ')
+	.replace('\r', '')
+	.replace('\"', '\'');
+}
+
 function download(filename, mimeType, text) {
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:'+mimeType+',' + encodeURIComponent(text));
-  element.setAttribute('download', filename);
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
+	var blob = new Blob([text], {type: mimeType});
+	saveAs(blob, fileName(filename));
 }
 
 function getScript(id) {
@@ -281,31 +301,33 @@ function clearPlaceholder() {
 }
 
 // class to simplify DOM manipulation
-function HTMLBuilder(node) {
-  this.node = typeof node == "string" ? document.createElement(node) : node;
+class HTMLBuilder {
   
-  this.element = function(elementName) {
-    var element = document.createElement(elementName);
-    this.node.append(element);
-    return new HTMLBuilder(element);
-  }
-  
-  this.text = function(text) {
-    this.node.append(document.createTextNode(text));
-    return this;
-  }
-  
-  this.attribute = function(key, value) {
-    this.node.setAttribute(key,value);
-    return this;
-  }
-  
-  this.clear = function() {
-    this.node.innerHTML="";
-    return this;
-  }
+	constructor(node) {
+	  this.node = typeof node == "string" ? document.createElement(node) : node;
+	}
+	
+	element(elementName) {
+	  var element = document.createElement(elementName);
+	  this.node.append(element);
+	  return new HTMLBuilder(element);
+	}
+	
+	text(text) {
+	  this.node.append(document.createTextNode(text));
+	  return this;
+	}
+	
+	attribute(key, value) {
+	  this.node.setAttribute(key,value);
+	  return this;
+	}
+	
+	clear() {
+	  this.node.innerHTML="";
+	  return this;
+	}
 }
-
 
 const tutorials = [
 	{
@@ -330,6 +352,6 @@ const tutorials = [
 	  "id": 4,
 	  "name": "#4 HTML/DOM",
 	  "description": "Manipulating HTML in the browser",
-	  "script":"// Example data: some movies\nconst movies = [\n  { \n    title: \"Blade Runner\", \n    year: 1982, \n    genres: ['Sci-Fi', 'Thriller']\n  },\n  { \n    title: \"The Cabin in the Woods\", \n    year: 2012, \n    genres: ['Fantasy', 'Horror', 'Mistery'] \n  },\n  { \n    title: \"Back to the Future\", \n    year: 1985, \n    genres: ['Adventure', 'Comedy', 'Sci-Fi'] \n  }\n];\n\nfunction HTMLBuilder(node) {\n  this.node = typeof node == \"string\" ? document.createElement(node) : node;\n  \n  this.element = function(elementName) {\n    var element = document.createElement(elementName);\n    this.node.append(element);\n    return new HTMLBuilder(element);\n  }\n  \n  this.text = function(text) {\n    this.node.append(document.createTextNode(text));\n    return this;\n  }\n  \n  this.attribute = function(key, value) {\n    this.node.setAttribute(key,value);\n    return this;\n  }\n  \n  this.clear = function() {\n    this.node.innerHTML=\"\";\n    return this;\n  }\n}\n\n// render the movies as HTML\nfunction createMovieList() {\n  var placeholder = document.getElementById(\"placeholder\");\n  var builder = new HTMLBuilder(placeholder);\n  \n  var list = builder.element('ul');\n  for (var movie of movies) {\n    var item = list.element('li');\n    item.element('b').text(movie.title);\n    item.element('br');\n    item.text(movie.year).text(' | ')\n    item.element('i').text(movie.genres.join(', '));\n  }\n  placeholder.append(list.node);\n}\n\ncreateMovieList();\n"
+	  "script":"// Example data: some movies\nconst movies = [\n  { \n    title: \"Blade Runner\", \n    year: 1982, \n    genres: ['Sci-Fi', 'Thriller']\n  },\n  { \n    title: \"The Cabin in the Woods\", \n    year: 2012, \n    genres: ['Fantasy', 'Horror', 'Mistery'] \n  },\n  { \n    title: \"Back to the Future\", \n    year: 1985, \n    genres: ['Adventure', 'Comedy', 'Sci-Fi'] \n  }\n];\n\nclass HTMLBuilder {\n  \n\tconstructor(node) {\n\t  this.node = typeof node == \"string\" ? document.createElement(node) : node;\n\t}\n\t\n\telement(elementName) {\n\t  var element = document.createElement(elementName);\n\t  this.node.append(element);\n\t  return new HTMLBuilder(element);\n\t}\n\t\n\ttext(text) {\n\t  this.node.append(document.createTextNode(text));\n\t  return this;\n\t}\n\t\n\tattribute(key, value) {\n\t  this.node.setAttribute(key,value);\n\t  return this;\n\t}\n\t\n\tclear() {\n\t  this.node.innerHTML=\"\";\n\t  return this;\n\t}\n}\n\n// render the movies as HTML\nfunction createMovieList() {\n  var placeholder = document.getElementById(\"placeholder\");\n  var builder = new HTMLBuilder(placeholder);\n  \n  var list = builder.element('ul');\n  for (var movie of movies) {\n    var item = list.element('li');\n    item.element('b').text(movie.title);\n    item.element('br');\n    item.text(movie.year).text(' | ')\n    item.element('i').text(movie.genres.join(', '));\n  }\n  placeholder.append(list.node);\n}\n\ncreateMovieList();\n"
 	}
 ];
