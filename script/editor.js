@@ -63,7 +63,9 @@ function runScript() {
 	try {
 		eval(code); 
 	} catch (e) {
-		console.error(e.message +" [line "+e.lineNumber+", column "+e.columnNumber+"]");
+		var message = e.message? e.message: e;
+		var details = e.lineNumber? ` [line ${e.lineNumber}, column ${e.columnNumber}]` : "";
+		console.error(`${message}${details}`);
 	}
 };
 
